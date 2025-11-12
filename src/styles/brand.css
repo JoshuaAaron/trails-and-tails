@@ -1,0 +1,6 @@
+:root{
+  --bb-brook:#1F6A68;--bb-ridge:#0D3B3A;--bb-bone:#EADDCB;--bb-moss:#3D7C59;--bb-ember:#C75C3B;--bb-foam:#D9F1EF;--bb-mist:#F5F7F6;--bb-night:#111317;--bb-slate:#D3D9D9;
+  --bb-bg-primary:var(--bb-mist);--bb-bg-surface:#FFFFFF;--bb-text-primary:var(--bb-night);--bb-text-on-brand:var(--bb-mist);--bb-brand:var(--bb-brook);--bb-brand-2:var(--bb-ridge);--bb-accent:var(--bb-bone);--bb-border:var(--bb-slate);
+  --bb-radius-card:12px;--bb-radius-input:8px;--bb-radius-pill:999px;--bb-shadow-card:0 4px 14px rgba(0,0,0,0.08);
+  --bb-font-heading:"Libre Baskerville",serif;--bb-font-body:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,Arial,"Helvetica Neue",sans-serif;
+}

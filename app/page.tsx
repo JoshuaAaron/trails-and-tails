@@ -1,63 +1,221 @@
 import Image from "next/image";
+import Link from "next/link";
 
 export default function Home() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+    <div style={{ minHeight: "100vh", backgroundColor: "var(--bb-bg-primary)" }}>
+      {/* Header */}
+      <header
+        style={{
+          backgroundColor: "var(--bb-bg-surface)",
+          borderBottom: "1px solid var(--bb-border)",
+          padding: "1rem 2rem",
+        }}
+      >
+        <div
+          style={{
+            maxWidth: "1144px",
+            margin: "0 auto",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+            <Image src="/wordmark.svg" alt="Brook & Bone" width={120} height={32} />
+          </div>
+          <nav style={{ display: "flex", gap: "2rem", alignItems: "center" }}>
+            <Link
+              href="/search"
+              style={{
+                color: "var(--bb-text-primary)",
+                textDecoration: "none",
+                fontWeight: 500,
+              }}
             >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+              Find a yard
+            </Link>
+            <Link
+              href="/host"
+              style={{
+                color: "var(--bb-text-primary)",
+                textDecoration: "none",
+                fontWeight: 500,
+              }}
             >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+              Become a Host
+            </Link>
+            <Link
+              href="/account"
+              style={{
+                backgroundColor: "var(--bb-brand)",
+                color: "var(--bb-text-on-brand)",
+                padding: "12px 16px",
+                borderRadius: "var(--bb-radius-card)",
+                textDecoration: "none",
+                fontWeight: 500,
+                transition: "background-color 160ms cubic-bezier(0.2,0.8,0.2,1)",
+              }}
+            >
+              Account
+            </Link>
+          </nav>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+      </header>
+
+      {/* Hero Section */}
+      <main
+        style={{
+          maxWidth: "1144px",
+          margin: "0 auto",
+          padding: "4rem 2rem",
+          textAlign: "center",
+        }}
+      >
+        <div style={{ maxWidth: "800px", margin: "0 auto" }}>
+          <h1
+            style={{
+              fontFamily: "var(--bb-font-heading)",
+              fontSize: "48px",
+              lineHeight: 1.2,
+              fontWeight: 700,
+              color: "var(--bb-text-primary)",
+              marginBottom: "1.5rem",
+            }}
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            Private nature yards for happy dogs.
+          </h1>
+          <h2
+            style={{
+              fontSize: "24px",
+              lineHeight: 1.6,
+              color: "var(--bb-text-primary)",
+              marginBottom: "3rem",
+              fontWeight: 400,
+            }}
           >
-            Documentation
-          </a>
+            Book secure, serene spaces by the hour—fenced, shaded, host-verified.
+          </h2>
+          
+          <div style={{ display: "flex", gap: "1rem", justifyContent: "center", flexWrap: "wrap" }}>
+            <Link
+              href="/search"
+              style={{
+                backgroundColor: "var(--bb-brand)",
+                color: "var(--bb-text-on-brand)",
+                padding: "12px 24px",
+                borderRadius: "var(--bb-radius-card)",
+                textDecoration: "none",
+                fontWeight: 600,
+                fontSize: "18px",
+                transition: "all 160ms cubic-bezier(0.2,0.8,0.2,1)",
+                display: "inline-block",
+              }}
+            >
+              Find a yard
+            </Link>
+            <Link
+              href="/host"
+              style={{
+                backgroundColor: "var(--bb-accent)",
+                color: "var(--bb-brand-2)",
+                padding: "12px 24px",
+                borderRadius: "var(--bb-radius-card)",
+                textDecoration: "none",
+                fontWeight: 600,
+                fontSize: "18px",
+                transition: "all 160ms cubic-bezier(0.2,0.8,0.2,1)",
+                display: "inline-block",
+              }}
+            >
+              Become a Host
+            </Link>
+          </div>
+        </div>
+
+        {/* Hero Features */}
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+            gap: "2rem",
+            marginTop: "4rem",
+          }}
+        >
+          <div
+            style={{
+              backgroundColor: "var(--bb-bg-surface)",
+              padding: "2rem",
+              borderRadius: "var(--bb-radius-card)",
+              boxShadow: "var(--bb-shadow-card)",
+              border: "1px solid var(--bb-border)",
+            }}
+          >
+            <h3
+              style={{
+                fontFamily: "var(--bb-font-heading)",
+                fontSize: "24px",
+                fontWeight: 600,
+                marginBottom: "1rem",
+                color: "var(--bb-text-primary)",
+              }}
+            >
+              Secure & Fenced
+            </h3>
+            <p style={{ color: "var(--bb-text-primary)", lineHeight: 1.6 }}>
+              "Secure fencing and shade by the creek."
+            </p>
+          </div>
+          
+          <div
+            style={{
+              backgroundColor: "var(--bb-bg-surface)",
+              padding: "2rem",
+              borderRadius: "var(--bb-radius-card)",
+              boxShadow: "var(--bb-shadow-card)",
+              border: "1px solid var(--bb-border)",
+            }}
+          >
+            <h3
+              style={{
+                fontFamily: "var(--bb-font-heading)",
+                fontSize: "24px",
+                fontWeight: 600,
+                marginBottom: "1rem",
+                color: "var(--bb-text-primary)",
+              }}
+            >
+              Quick Response
+            </h3>
+            <p style={{ color: "var(--bb-text-primary)", lineHeight: 1.6 }}>
+              "Hosts typically reply within 2 hours."
+            </p>
+          </div>
+          
+          <div
+            style={{
+              backgroundColor: "var(--bb-bg-surface)",
+              padding: "2rem",
+              borderRadius: "var(--bb-radius-card)",
+              boxShadow: "var(--bb-shadow-card)",
+              border: "1px solid var(--bb-border)",
+            }}
+          >
+            <h3
+              style={{
+                fontFamily: "var(--bb-font-heading)",
+                fontSize: "24px",
+                fontWeight: 600,
+                marginBottom: "1rem",
+                color: "var(--bb-text-primary)",
+              }}
+            >
+            Flexible Booking
+            </h3>
+            <p style={{ color: "var(--bb-text-primary)", lineHeight: 1.6 }}>
+              "Free cancellation up to 24 hours before your booking."
+            </p>
+          </div>
         </div>
       </main>
     </div>
