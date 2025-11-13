@@ -27,8 +27,9 @@ export function StepReview({
   const endDateTime = `${selectedDate}T${convertTo24Hour(selectedEndTime)}`;
   const totalPrice = calculatePrice(yard.price, startDateTime, endDateTime);
 
-  // Format date for display
-  const displayDate = new Date(selectedDate).toLocaleDateString('en-US', {
+  // Format date for display - avoid timezone issues by parsing manually
+  const [year, month, day] = selectedDate.split('-');
+  const displayDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day)).toLocaleDateString('en-US', {
     weekday: 'long',
     year: 'numeric',
     month: 'long',

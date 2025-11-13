@@ -32,9 +32,25 @@ function convertTo24Hour(time12h: string): string {
 export default function ListingPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  
+  // ALL STATE HOOKS MUST BE CALLED AT THE TOP - NEVER CONDITIONALLY
   const [yardId, setYardId] = useState<string>("");
   const [yard, setYard] = useState<Yard | null>(null);
   
+  // State management for booking flow
+  const [currentStep, setCurrentStep] = useState(0);
+  const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  // Booking form state
+  const [selectedDate, setSelectedDate] = useState(searchParams.get("date") || "");
+  const [selectedStartTime, setSelectedStartTime] = useState(searchParams.get("start") || "");
+  const [selectedEndTime, setSelectedEndTime] = useState(searchParams.get("end") || "");
+  const [guestNotes, setGuestNotes] = useState("");
+  const [guests, setGuests] = useState(1);
+  const [dogNames, setDogNames] = useState<string[]>([]);
+  
+  // ALL USEEFFECT HOOKS MUST BE AT THE TOP TOO
   // Unwrap params and check if yard exists
   useEffect(() => {
     params.then(({ id }) => {
@@ -46,8 +62,20 @@ export default function ListingPage({ params }: { params: Promise<{ id: string }
       setYard(getYard(id));
     });
   }, [params]);
+
+  // Update URL when booking details change
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (selectedDate) params.set("date", selectedDate);
+    if (selectedStartTime) params.set("start", selectedStartTime);
+    if (selectedEndTime) params.set("end", selectedEndTime);
+    
+    const newUrl = `${window.location.pathname}${params.toString() ? `?${params.toString()}` : ""}`;
+    window.history.replaceState(null, "", newUrl);
+  }, [selectedDate, selectedStartTime, selectedEndTime]);
   
-  if (!yardId || !yard) {
+  // Handle loading and error states with conditional rendering instead of early returns
+  if (!yardId) {
     return (
       <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
         <div>Loading...</div>
@@ -66,29 +94,13 @@ export default function ListingPage({ params }: { params: Promise<{ id: string }
     );
   }
 
-  // State management for booking flow
-  const [currentStep, setCurrentStep] = useState(0);
-  const [error, setError] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  
-  // Booking form state
-  const [selectedDate, setSelectedDate] = useState(searchParams.get("date") || "");
-  const [selectedStartTime, setSelectedStartTime] = useState(searchParams.get("start") || "");
-  const [selectedEndTime, setSelectedEndTime] = useState(searchParams.get("end") || "");
-  const [guestNotes, setGuestNotes] = useState("");
-  const [guests, setGuests] = useState(1);
-  const [dogNames, setDogNames] = useState<string[]>([]);
-
-  // Update URL when booking details change
-  useEffect(() => {
-    const params = new URLSearchParams();
-    if (selectedDate) params.set("date", selectedDate);
-    if (selectedStartTime) params.set("start", selectedStartTime);
-    if (selectedEndTime) params.set("end", selectedEndTime);
-    
-    const newUrl = `${window.location.pathname}${params.toString() ? `?${params.toString()}` : ""}`;
-    window.history.replaceState(null, "", newUrl);
-  }, [selectedDate, selectedStartTime, selectedEndTime]);
+  if (!yard) {
+    return (
+      <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <div>Loading...</div>
+      </div>
+    );
+  }
 
   const validateCurrentStep = (): boolean => {
     setError("");
@@ -119,7 +131,27 @@ export default function ListingPage({ params }: { params: Promise<{ id: string }
         return true;
       
       case 2: // Review
-        return validateCurrentStep(); // Re-validate everything
+        // Re-validate all required fields without recursion
+        if (!selectedDate || !selectedStartTime || !selectedEndTime) {
+          setError("Please select a date, start time, and end time.");
+          return false;
+        }
+        
+        if (guests < 1) {
+          setError("Please select at least 1 dog.");
+          return false;
+        }
+        
+        // Validate time range
+        const reviewStartDateTime = `${selectedDate}T${convertTo24Hour(selectedStartTime)}`;
+        const reviewEndDateTime = `${selectedDate}T${convertTo24Hour(selectedEndTime)}`;
+        
+        if (!isWithinSlots(yard, reviewStartDateTime, reviewEndDateTime)) {
+          setError("Selected time is not available or doesn't meet our booking requirements (30-180 minutes, on 30-minute intervals).");
+          return false;
+        }
+        
+        return true;
       
       default:
         return true;
