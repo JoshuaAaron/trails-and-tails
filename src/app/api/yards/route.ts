@@ -10,7 +10,7 @@ export async function GET(req: Request) {
   const priceMin = searchParams.get('price_min');
   const priceMax = searchParams.get('price_max');
 
-  let items: YardSummary[] = listYardSummaries();
+  let items: YardSummary[] = [...listYardSummaries()];
 
   if (fencedParam !== null) {
     const val = fencedParam === 'true';

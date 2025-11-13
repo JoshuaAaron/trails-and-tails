@@ -22,7 +22,7 @@ export default function Home() {
           }}
         >
           <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-            <Image src="/wordmark.svg" alt="Brook & Bone" width={120} height={32} />
+            <Image src="/wordmark.svg" alt="Trails & Tails" width={120} height={32} />
           </div>
           <nav style={{ display: "flex", gap: "2rem", alignItems: "center" }}>
             <Link
@@ -83,7 +83,7 @@ export default function Home() {
               marginBottom: "1.5rem",
             }}
           >
-            Private nature yards for happy dogs.
+            Private yards. Big adventures.
           </h1>
           <h2
             style={{

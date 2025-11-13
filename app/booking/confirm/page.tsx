@@ -1,6 +1,54 @@
+"use client";
+
 import Link from "next/link";
+import { useEffect, useState } from "react";
+
+interface BookingDetails {
+  confirmationId: string;
+  yardName: string;
+  start: string;
+  end: string;
+  totalPrice: number;
+  guests?: number;
+  dogNames?: string[];
+  guestNotes?: string;
+}
 
 export default function BookingConfirmPage() {
+  const [booking, setBooking] = useState<BookingDetails | null>(null);
+
+  useEffect(() => {
+    // Read booking details from localStorage
+    const storedBooking = localStorage.getItem("lastBooking");
+    if (storedBooking) {
+      try {
+        const bookingData = JSON.parse(storedBooking);
+        setBooking(bookingData);
+        // Clear the stored booking data
+        localStorage.removeItem("lastBooking");
+      } catch (error) {
+        console.error("Failed to parse booking data:", error);
+      }
+    }
+  }, []);
+
+  // Format dates for display
+  const formatDateTime = (isoString: string) => {
+    const date = new Date(isoString);
+    return {
+      date: date.toLocaleDateString('en-US', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      }),
+      time: date.toLocaleTimeString('en-US', {
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: true
+      })
+    };
+  };
   return (
     <div style={{ minHeight: "100vh", backgroundColor: "var(--bb-bg-primary)" }}>
       {/* Header */}
@@ -37,7 +85,7 @@ export default function BookingConfirmPage() {
                 color: "var(--bb-text-primary)",
               }}
             >
-              Brook & Bone
+              Trails & Tails
             </span>
           </Link>
           <nav style={{ display: "flex", gap: "2rem", alignItems: "center" }}>
@@ -139,21 +187,35 @@ export default function BookingConfirmPage() {
               Booking Details
             </h3>
             <div style={{ display: "grid", gap: "0.5rem" }}>
-              <div>
-                <strong>Confirmation ID:</strong> BB-A1B2C3
-              </div>
-              <div>
-                <strong>Yard:</strong> Ridge Creek Yard
-              </div>
-              <div>
-                <strong>Date:</strong> November 15, 2025
-              </div>
-              <div>
-                <strong>Time:</strong> 10:00 AM - 12:00 PM
-              </div>
-              <div>
-                <strong>Total:</strong> $36.00
-              </div>
+              {booking ? (
+                <>
+                  <div>
+                    <strong>Confirmation ID:</strong> {booking.confirmationId}
+                  </div>
+                  <div>
+                    <strong>Yard:</strong> {booking.yardName}
+                  </div>
+                  <div>
+                    <strong>Date:</strong> {formatDateTime(booking.start).date}
+                  </div>
+                  <div>
+                    <strong>Time:</strong> {formatDateTime(booking.start).time} - {formatDateTime(booking.end).time}
+                  </div>
+                  {booking.guests && booking.guests > 1 && (
+                    <div>
+                      <strong>Dogs:</strong> {booking.guests} {booking.guests === 1 ? 'dog' : 'dogs'}
+                      {booking.dogNames && booking.dogNames.length > 0 && (
+                        <span> ({booking.dogNames.join(', ')})</span>
+                      )}
+                    </div>
+                  )}
+                  <div>
+                    <strong>Total:</strong> ${booking.totalPrice.toFixed(2)}
+                  </div>
+                </>
+              ) : (
+                <div>Loading booking details...</div>
+              )}
             </div>
           </div>
 

@@ -1,6 +1,190 @@
-import Link from "next/link";
+"use client";
 
-export default function ListingPage({ params }: { params: { id: string } }) {
+import Link from "next/link";
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { isYardId, getYard } from "@/lib/mockData";
+import { BookingRequest, Yard, Amenity } from "@/lib/types";
+import { isWithinSlots, calculatePrice } from "@/lib/availability";
+import { Stepper } from "@/components/booking/Stepper";
+import { StepSelectTime } from "@/components/booking/StepSelectTime";
+import { StepGuestInfo } from "@/components/booking/StepGuestInfo";
+import { StepReview } from "@/components/booking/StepReview";
+
+const STEPS = ["Select Time", "Guest Info", "Review", "Confirm"];
+
+// Helper function to convert 12-hour time to 24-hour format for ISO strings
+function convertTo24Hour(time12h: string): string {
+  const [time, modifier] = time12h.split(' ');
+  let [hours, minutes] = time.split(':');
+  
+  if (hours === '12') {
+    hours = '00';
+  }
+  
+  if (modifier === 'PM') {
+    hours = (parseInt(hours, 10) + 12).toString();
+  }
+  
+  return `${hours.padStart(2, '0')}:${minutes}:00`;
+}
+
+export default function ListingPage({ params }: { params: Promise<{ id: string }> }) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const [yardId, setYardId] = useState<string>("");
+  const [yard, setYard] = useState<Yard | null>(null);
+  
+  // Unwrap params and check if yard exists
+  useEffect(() => {
+    params.then(({ id }) => {
+      setYardId(id);
+      if (!isYardId(id)) {
+        // Yard not found - we'll handle this in the render
+        return;
+      }
+      setYard(getYard(id));
+    });
+  }, [params]);
+  
+  if (!yardId || !yard) {
+    return (
+      <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <div>Loading...</div>
+      </div>
+    );
+  }
+  
+  if (!isYardId(yardId)) {
+    return (
+      <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <div style={{ textAlign: "center" }}>
+          <h1 style={{ fontSize: "24px", marginBottom: "1rem" }}>Yard Not Found</h1>
+          <Link href="/search" style={{ color: "var(--bb-brand)" }}>← Back to search</Link>
+        </div>
+      </div>
+    );
+  }
+
+  // State management for booking flow
+  const [currentStep, setCurrentStep] = useState(0);
+  const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  // Booking form state
+  const [selectedDate, setSelectedDate] = useState(searchParams.get("date") || "");
+  const [selectedStartTime, setSelectedStartTime] = useState(searchParams.get("start") || "");
+  const [selectedEndTime, setSelectedEndTime] = useState(searchParams.get("end") || "");
+  const [guestNotes, setGuestNotes] = useState("");
+  const [guests, setGuests] = useState(1);
+  const [dogNames, setDogNames] = useState<string[]>([]);
+
+  // Update URL when booking details change
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (selectedDate) params.set("date", selectedDate);
+    if (selectedStartTime) params.set("start", selectedStartTime);
+    if (selectedEndTime) params.set("end", selectedEndTime);
+    
+    const newUrl = `${window.location.pathname}${params.toString() ? `?${params.toString()}` : ""}`;
+    window.history.replaceState(null, "", newUrl);
+  }, [selectedDate, selectedStartTime, selectedEndTime]);
+
+  const validateCurrentStep = (): boolean => {
+    setError("");
+    
+    switch (currentStep) {
+      case 0: // Select Time
+        if (!selectedDate || !selectedStartTime || !selectedEndTime) {
+          setError("Please select a date, start time, and end time.");
+          return false;
+        }
+        
+        // Validate time range
+        const startDateTime = `${selectedDate}T${convertTo24Hour(selectedStartTime)}`;
+        const endDateTime = `${selectedDate}T${convertTo24Hour(selectedEndTime)}`;
+        
+        if (!isWithinSlots(yard, startDateTime, endDateTime)) {
+          setError("Selected time is not available or doesn't meet our booking requirements (30-180 minutes, on 30-minute intervals).");
+          return false;
+        }
+        
+        return true;
+      
+      case 1: // Guest Info
+        if (guests < 1) {
+          setError("Please select at least 1 dog.");
+          return false;
+        }
+        return true;
+      
+      case 2: // Review
+        return validateCurrentStep(); // Re-validate everything
+      
+      default:
+        return true;
+    }
+  };
+
+  const handleNext = () => {
+    if (validateCurrentStep()) {
+      setCurrentStep(prev => Math.min(prev + 1, STEPS.length - 1));
+    }
+  };
+
+  const handleBack = () => {
+    setError("");
+    setCurrentStep(prev => Math.max(prev - 1, 0));
+  };
+
+  const handleSubmitBooking = async () => {
+    if (!validateCurrentStep()) return;
+    
+    setIsSubmitting(true);
+    setError("");
+    
+    try {
+      const startDateTime = `${selectedDate}T${convertTo24Hour(selectedStartTime)}`;
+      const endDateTime = `${selectedDate}T${convertTo24Hour(selectedEndTime)}`;
+      
+      const bookingData: BookingRequest = {
+        yardId: yard.id,
+        start: startDateTime,
+        end: endDateTime,
+        guestNotes: guestNotes.trim() || undefined,
+        guests,
+        dogNames: dogNames.length > 0 ? dogNames : undefined,
+      };
+
+      const response = await fetch("/api/bookings", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(bookingData),
+      });
+
+      const result = await response.json();
+      
+      if (response.ok && result.ok) {
+        // Store confirmation details in localStorage for the confirmation page
+        localStorage.setItem("lastBooking", JSON.stringify({
+          ...bookingData,
+          confirmationId: result.confirmationId,
+          yardName: yard.name,
+          totalPrice: calculatePrice(yard.price, startDateTime, endDateTime),
+        }));
+        router.push("/booking/confirm");
+      } else {
+        setError(result.error || "Failed to create booking. Please try again.");
+      }
+    } catch (err) {
+      setError("Network error. Please check your connection and try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <div style={{ minHeight: "100vh", backgroundColor: "var(--bb-bg-primary)" }}>
       {/* Header */}
@@ -37,7 +221,7 @@ export default function ListingPage({ params }: { params: { id: string } }) {
                 color: "var(--bb-text-primary)",
               }}
             >
-              Brook & Bone
+              Trails & Tails
             </span>
           </Link>
           <nav style={{ display: "flex", gap: "2rem", alignItems: "center" }}>
@@ -146,14 +330,11 @@ export default function ListingPage({ params }: { params: { id: string } }) {
                   color: "var(--bb-text-primary)",
                 }}
               >
-                {params.id === "ridge-creek" ? "Ridge Creek Yard" : "Meadow Shade Acre"}
+                {yard.name}
               </h1>
               
               <p style={{ fontSize: "18px", marginBottom: "2rem", color: "var(--bb-text-primary)" }}>
-                {params.id === "ridge-creek" 
-                  ? "Secure fencing and shade by the creek."
-                  : "Open meadow with trees and privacy fence."
-                }
+                {yard.desc}
               </p>
 
               {/* Amenities */}
@@ -169,32 +350,9 @@ export default function ListingPage({ params }: { params: { id: string } }) {
                 Amenities
               </h3>
               <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap", marginBottom: "2rem" }}>
-                <span
-                  style={{
-                    backgroundColor: "var(--bb-moss)",
-                    color: "var(--bb-text-on-brand)",
-                    padding: "4px 12px",
-                    borderRadius: "var(--bb-radius-pill)",
-                    fontSize: "14px",
-                    fontWeight: 500,
-                  }}
-                >
-                  Fenced
-                </span>
-                <span
-                  style={{
-                    backgroundColor: "var(--bb-moss)",
-                    color: "var(--bb-text-on-brand)",
-                    padding: "4px 12px",
-                    borderRadius: "var(--bb-radius-pill)",
-                    fontSize: "14px",
-                    fontWeight: 500,
-                  }}
-                >
-                  Shade
-                </span>
-                {params.id === "ridge-creek" && (
+                {yard.amenities.map((amenity: Amenity) => (
                   <span
+                    key={amenity}
                     style={{
                       backgroundColor: "var(--bb-moss)",
                       color: "var(--bb-text-on-brand)",
@@ -204,33 +362,34 @@ export default function ListingPage({ params }: { params: { id: string } }) {
                       fontWeight: 500,
                     }}
                   >
-                    Water
+                    {amenity}
                   </span>
-                )}
+                ))}
               </div>
 
               {/* Host Notes */}
-              <h3
-                style={{
-                  fontFamily: "var(--bb-font-heading)",
-                  fontSize: "20px",
-                  fontWeight: 600,
-                  marginBottom: "0.5rem",
-                  color: "var(--bb-text-primary)",
-                }}
-              >
-                Host Notes
-              </h3>
-              <p style={{ color: "var(--bb-text-primary)" }}>
-                {params.id === "ridge-creek" 
-                  ? "Please keep the gate latched."
-                  : "Park in the gravel area by the barn."
-                }
-              </p>
+              {yard.hostNotes && (
+                <>
+                  <h3
+                    style={{
+                      fontFamily: "var(--bb-font-heading)",
+                      fontSize: "20px",
+                      fontWeight: 600,
+                      marginBottom: "0.5rem",
+                      color: "var(--bb-text-primary)",
+                    }}
+                  >
+                    Host Notes
+                  </h3>
+                  <p style={{ color: "var(--bb-text-primary)" }}>
+                    {yard.hostNotes}
+                  </p>
+                </>
+              )}
             </div>
           </div>
 
-          {/* Right Column - Booking */}
+          {/* Right Column - Multi-Step Booking */}
           <div
             style={{
               backgroundColor: "var(--bb-bg-surface)",
@@ -250,132 +409,118 @@ export default function ListingPage({ params }: { params: { id: string } }) {
                 marginBottom: "1.5rem",
               }}
             >
-              ${params.id === "ridge-creek" ? "18" : "15"}/hour
+              ${yard.price}/hour
             </div>
 
-            {/* Booking Form */}
-            <form>
-              <div style={{ marginBottom: "1rem" }}>
-                <label
+            {/* Step Progress */}
+            <Stepper steps={STEPS} currentStep={currentStep} />
+
+            {/* Step Content */}
+            {currentStep === 0 && (
+              <StepSelectTime
+                yard={yard}
+                selectedDate={selectedDate}
+                selectedStartTime={selectedStartTime}
+                selectedEndTime={selectedEndTime}
+                onDateChange={setSelectedDate}
+                onStartTimeChange={setSelectedStartTime}
+                onEndTimeChange={setSelectedEndTime}
+                error={error}
+              />
+            )}
+
+            {currentStep === 1 && (
+              <StepGuestInfo
+                guestNotes={guestNotes}
+                guests={guests}
+                dogNames={dogNames}
+                onGuestNotesChange={setGuestNotes}
+                onGuestsChange={setGuests}
+                onDogNamesChange={setDogNames}
+                error={error}
+              />
+            )}
+
+            {currentStep === 2 && (
+              <StepReview
+                yard={yard}
+                selectedDate={selectedDate}
+                selectedStartTime={selectedStartTime}
+                selectedEndTime={selectedEndTime}
+                guestNotes={guestNotes}
+                guests={guests}
+                dogNames={dogNames}
+                error={error}
+              />
+            )}
+
+            {/* Navigation Buttons */}
+            <div
+              style={{
+                display: "flex",
+                gap: "1rem",
+                marginTop: "2rem",
+                justifyContent: currentStep === 0 ? "flex-end" : "space-between",
+              }}
+            >
+              {currentStep > 0 && (
+                <button
+                  onClick={handleBack}
+                  type="button"
                   style={{
-                    display: "block",
-                    marginBottom: "0.5rem",
-                    fontWeight: 500,
+                    backgroundColor: "var(--bb-bg-surface)",
                     color: "var(--bb-text-primary)",
+                    border: "1px solid var(--bb-border)",
+                    padding: "12px 24px",
+                    borderRadius: "var(--bb-radius-card)",
+                    fontWeight: 500,
+                    cursor: "pointer",
+                    transition: "all 160ms cubic-bezier(0.2,0.8,0.2,1)",
                   }}
                 >
-                  Date
-                </label>
-                <input
-                  type="date"
-                  style={{
-                    width: "100%",
-                    padding: "12px",
-                    borderRadius: "var(--bb-radius-input)",
-                    border: "1px solid var(--bb-border)",
-                    backgroundColor: "var(--bb-bg-surface)",
-                  }}
-                />
-              </div>
-              
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginBottom: "1rem" }}>
-                <div>
-                  <label
-                    style={{
-                      display: "block",
-                      marginBottom: "0.5rem",
-                      fontWeight: 500,
-                      color: "var(--bb-text-primary)",
-                    }}
-                  >
-                    Start Time
-                  </label>
-                  <select
-                    style={{
-                      width: "100%",
-                      padding: "12px",
-                      borderRadius: "var(--bb-radius-input)",
-                      border: "1px solid var(--bb-border)",
-                      backgroundColor: "var(--bb-bg-surface)",
-                    }}
-                  >
-                    <option>9:00 AM</option>
-                    <option>10:00 AM</option>
-                    <option>11:00 AM</option>
-                    <option>12:00 PM</option>
-                  </select>
-                </div>
-                <div>
-                  <label
-                    style={{
-                      display: "block",
-                      marginBottom: "0.5rem",
-                      fontWeight: 500,
-                      color: "var(--bb-text-primary)",
-                    }}
-                  >
-                    End Time
-                  </label>
-                  <select
-                    style={{
-                      width: "100%",
-                      padding: "12px",
-                      borderRadius: "var(--bb-radius-input)",
-                      border: "1px solid var(--bb-border)",
-                      backgroundColor: "var(--bb-bg-surface)",
-                    }}
-                  >
-                    <option>10:00 AM</option>
-                    <option>11:00 AM</option>
-                    <option>12:00 PM</option>
-                    <option>1:00 PM</option>
-                  </select>
-                </div>
-              </div>
+                  Back
+                </button>
+              )}
 
-              <div style={{ marginBottom: "1.5rem" }}>
-                <label
+              {currentStep < 2 && (
+                <button
+                  onClick={handleNext}
+                  type="button"
                   style={{
-                    display: "block",
-                    marginBottom: "0.5rem",
-                    fontWeight: 500,
-                    color: "var(--bb-text-primary)",
+                    backgroundColor: "var(--bb-brand)",
+                    color: "var(--bb-text-on-brand)",
+                    border: "none",
+                    padding: "12px 24px",
+                    borderRadius: "var(--bb-radius-card)",
+                    fontWeight: 600,
+                    cursor: "pointer",
+                    transition: "all 160ms cubic-bezier(0.2,0.8,0.2,1)",
                   }}
                 >
-                  Guest Notes (optional)
-                </label>
-                <textarea
-                  placeholder="Any special requests or notes for the host..."
-                  rows={3}
-                  style={{
-                    width: "100%",
-                    padding: "12px",
-                    borderRadius: "var(--bb-radius-input)",
-                    border: "1px solid var(--bb-border)",
-                    backgroundColor: "var(--bb-bg-surface)",
-                    resize: "vertical",
-                  }}
-                />
-              </div>
+                  Next
+                </button>
+              )}
 
-              <Link
-                href="/booking/confirm"
-                style={{
-                  display: "block",
-                  backgroundColor: "var(--bb-brand)",
-                  color: "var(--bb-text-on-brand)",
-                  padding: "16px",
-                  borderRadius: "var(--bb-radius-card)",
-                  textAlign: "center",
-                  textDecoration: "none",
-                  fontWeight: 600,
-                  fontSize: "16px",
-                  transition: "all 160ms cubic-bezier(0.2,0.8,0.2,1)",
-                }}
-              >
-                Book Now
-              </Link>
-            </form>
+              {currentStep === 2 && (
+                <button
+                  onClick={handleSubmitBooking}
+                  disabled={isSubmitting}
+                  type="button"
+                  style={{
+                    backgroundColor: isSubmitting ? "var(--bb-border)" : "var(--bb-brand)",
+                    color: "var(--bb-text-on-brand)",
+                    border: "none",
+                    padding: "12px 24px",
+                    borderRadius: "var(--bb-radius-card)",
+                    fontWeight: 600,
+                    cursor: isSubmitting ? "not-allowed" : "pointer",
+                    transition: "all 160ms cubic-bezier(0.2,0.8,0.2,1)",
+                  }}
+                >
+                  {isSubmitting ? "Booking..." : "Confirm Booking"}
+                </button>
+              )}
+            </div>
 
             <p
               style={{

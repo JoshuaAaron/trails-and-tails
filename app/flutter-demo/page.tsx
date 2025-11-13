@@ -37,7 +37,7 @@ export default function FlutterDemoPage() {
                 color: "var(--bb-text-primary)",
               }}
             >
-              Brook & Bone
+              Trails & Tails
             </span>
           </Link>
           <nav style={{ display: "flex", gap: "2rem", alignItems: "center" }}>
@@ -115,7 +115,7 @@ export default function FlutterDemoPage() {
               color: "var(--bb-text-primary)",
             }}
           >
-            This demonstrates how the same Brook & Bone brand tokens can be used across both React and Flutter Web platforms.
+            This demonstrates how the same Trails & Tails brand tokens can be used across both React and Flutter Web platforms.
           </p>
 
           {/* Demo Notice */}

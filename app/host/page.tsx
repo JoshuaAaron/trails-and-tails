@@ -37,7 +37,7 @@ export default function HostPage() {
                 color: "var(--bb-text-primary)",
               }}
             >
-              Brook & Bone
+              Trails & Tails
             </span>
           </Link>
           <nav style={{ display: "flex", gap: "2rem", alignItems: "center" }}>

@@ -29,9 +29,9 @@ export interface YardSummary {
 
 export interface Yard extends YardSummary {
   desc: string;
-  amenities: Amenity[];
-  slots: IsoDateTime[]; // simple available start times for demo
-  photos?: string[];
+  amenities: ReadonlyArray<Amenity>;
+  slots: ReadonlyArray<IsoDateTime>;     // <-- readonly
+  photos?: ReadonlyArray<string>;        // <-- readonly
   hostNotes?: string;
 }
 
@@ -40,6 +40,8 @@ export interface BookingRequest {
   start: IsoDateTime;
   end: IsoDateTime;
   guestNotes?: string;
+  guests?: number;
+  dogNames?: ReadonlyArray<string>;
 }
 
 export interface BookingConfirmation {
@@ -100,7 +102,9 @@ export const BookingRequestSchema: z.ZodType<BookingRequest> = z.object({
   yardId: z.string(),
   start: z.string(),
   end: z.string(),
-  guestNotes: z.string().optional()
+  guestNotes: z.string().optional(),
+  guests: z.number().optional(),
+  dogNames: z.array(z.string()).optional()
 });
 
 export const BookingConfirmationSchema: z.ZodType<BookingConfirmation> = z.object({

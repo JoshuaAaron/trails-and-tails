@@ -37,7 +37,7 @@ export default function AccountPage() {
                 color: "var(--bb-text-primary)",
               }}
             >
-              Brook & Bone
+              Trails & Tails
             </span>
           </Link>
           <nav style={{ display: "flex", gap: "2rem", alignItems: "center" }}>
@@ -262,7 +262,7 @@ export default function AccountPage() {
               </label>
               <input
                 type="email"
-                value="demo@brookandbone.com"
+                value="demo@trailsandtails.com"
                 disabled
                 style={{
                   width: "100%",

@@ -1,0 +1,9 @@
+{
+  "servers": {
+    "trails-and-tails-debug-server": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["tsx", "tools/debug/mcp-server.ts"]
+    }
+  }
+}

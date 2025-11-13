@@ -4,3 +4,22 @@
   --bb-radius-card:12px;--bb-radius-input:8px;--bb-radius-pill:999px;--bb-shadow-card:0 4px 14px rgba(0,0,0,0.08);
   --bb-font-heading:"Libre Baskerville",serif;--bb-font-body:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,Arial,"Helvetica Neue",sans-serif;
 }
+
+/* Utility classes */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.error {
+  color: var(--bb-ember);
+  font-size: 14px;
+  margin-top: 0.25rem;
+}

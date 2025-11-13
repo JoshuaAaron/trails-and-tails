@@ -2,7 +2,7 @@ export default function Home() {
   return (
     <section className="card" style={{ padding: 24 }}>
       <h1 style={{ fontFamily: 'var(--bb-font-heading)', color: 'var(--bb-brand-2)', fontSize: '48px', lineHeight: 1.2 }}>
-        Private nature yards for happy dogs.
+        Private yards. Big adventures.
       </h1>
       <p style={{ marginTop: 8, maxWidth: 640 }}>
         Book secure, serene spaces by the hour—fenced, shaded, host-verified.

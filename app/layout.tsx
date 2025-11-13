@@ -15,7 +15,7 @@ const libreBaskerville = Libre_Baskerville({
 });
 
 export const metadata: Metadata = {
-  title: "Brook & Bone | Private nature yards for happy dogs",
+  title: "Trails & Tails | Private yards. Big adventures",
   description: "Book secure, serene spaces by the hour—fenced, shaded, host-verified.",
 };
 
