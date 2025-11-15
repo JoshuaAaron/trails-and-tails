@@ -94,7 +94,7 @@ export default function Home() {
               fontWeight: 400,
             }}
           >
-            Book secure, serene spaces by the hour—fenced, shaded, host-verified.
+            Trails & Tails hosts open up their spaces so your dog can run wild, not run into strangers.
           </h2>
           
           <div style={{ display: "flex", gap: "1rem", justifyContent: "center", flexWrap: "wrap" }}>

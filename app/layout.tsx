@@ -16,7 +16,7 @@ const libreBaskerville = Libre_Baskerville({
 
 export const metadata: Metadata = {
   title: "Trails & Tails | Private yards. Big adventures",
-  description: "Book secure, serene spaces by the hour—fenced, shaded, host-verified.",
+  description: "Trails & Tails hosts open up their spaces so your dog can run wild, not run into strangers.",
 };
 
 export default function RootLayout({

@@ -119,7 +119,7 @@ export default function SearchPage() {
               color: "var(--bb-text-primary)",
               lineHeight: "1.1"
             }}>
-              Off leash dog parks for rent
+              Your dog adventures await
             </h1>
             
             <p style={{ 
@@ -130,8 +130,8 @@ export default function SearchPage() {
               maxWidth: "600px",
               margin: "0 auto"
             }}>
-              Trails & Tails private dog parks are the best way to exercise your dog. 
-              We have the best variety and the best priced dog parks anywhere!
+              Trails & Tails turns local yards, fields, and trails into bookable adventures.
+              Just you, your dog, and endless sniffing rights.
             </p>
           </div>
         </div>

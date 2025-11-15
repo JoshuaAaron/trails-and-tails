@@ -5,7 +5,7 @@ export default function Home() {
         Private yards. Big adventures.
       </h1>
       <p style={{ marginTop: 8, maxWidth: 640 }}>
-        Book secure, serene spaces by the hour—fenced, shaded, host-verified.
+        Trails & Tails hosts open up their spaces so your dog can run wild, not run into strangers.
       </p>
 
       <form aria-label="Search yards" style={{ display: 'grid', gap: 12, gridTemplateColumns: '1fr 1fr 1fr auto', marginTop: 16 }}>
