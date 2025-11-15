@@ -8,7 +8,17 @@ export type Amenity =
   | 'Water'
   | 'Lighting'
   | 'Parking'
-  | 'PrivateEntrance';
+  | 'PrivateEntrance'
+  | 'Beach'
+  | 'Pool'
+  | 'Lake'
+  | 'Agility'
+  | 'Equipment'
+  | 'SmallDogFriendly'
+  | 'HikingTrails'
+  | 'Indoor'
+  | 'Climate'
+  | 'Restroom';
 
 export type IsoDateTime = string; // e.g., 2025-11-13T10:00
 
@@ -25,6 +35,8 @@ export interface YardSummary {
   lng: number;
   fenced: boolean;
   water: boolean;
+  acres: number;
+  amenities?: ReadonlyArray<Amenity>;
 }
 
 export interface Yard extends YardSummary {
@@ -78,7 +90,8 @@ export const YardSummarySchema = z.object({
   lat: z.number(),
   lng: z.number(),
   fenced: z.boolean(),
-  water: z.boolean()
+  water: z.boolean(),
+  acres: z.number()
 });
 
 export const YardSchema: z.ZodType<Yard> = YardSummarySchema.extend({
@@ -90,7 +103,17 @@ export const YardSchema: z.ZodType<Yard> = YardSummarySchema.extend({
       'Water',
       'Lighting',
       'Parking',
-      'PrivateEntrance'
+      'PrivateEntrance',
+      'Beach',
+      'Pool',
+      'Lake',
+      'Agility',
+      'Equipment',
+      'SmallDogFriendly',
+      'HikingTrails',
+      'Indoor',
+      'Climate',
+      'Restroom'
     ])
   ),
   slots: z.array(z.string()),

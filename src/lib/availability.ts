@@ -1,4 +1,12 @@
-import { Yard, IsoDateTime } from './types';
+import { Yard, IsoDateTime, YardSummary } from './types';
+
+interface SearchFilters {
+  fenced?: boolean;
+  water?: boolean;
+  parking?: boolean;
+  minPrice?: number;
+  maxPrice?: number;
+}
 
 /**
  * Checks if a given start/end time range falls within the yard's available slots
@@ -145,4 +153,35 @@ export function calculatePrice(hourlyRate: number, start: IsoDateTime, end: IsoD
   const durationHours = durationMs / (1000 * 60 * 60);
   
   return Math.round(hourlyRate * durationHours * 100) / 100; // Round to nearest cent
+}
+
+/**
+ * Applies search filters to a list of yards
+ * @param yards Array of yard summaries to filter
+ * @param filters Search filter criteria
+ * @returns Filtered array of yards
+ */
+export function applySearchFilters(yards: YardSummary[], filters: SearchFilters): YardSummary[] {
+  return yards.filter(yard => {
+    // Filter by fenced requirement
+    if (filters.fenced && !yard.fenced) {
+      return false;
+    }
+
+    // Filter by water access requirement
+    if (filters.water && !yard.water) {
+      return false;
+    }
+
+    // Filter by price range
+    if (filters.minPrice !== undefined && yard.price < filters.minPrice) {
+      return false;
+    }
+
+    if (filters.maxPrice !== undefined && yard.price > filters.maxPrice) {
+      return false;
+    }
+
+    return true;
+  });
 }

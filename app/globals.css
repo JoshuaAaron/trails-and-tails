@@ -24,3 +24,53 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Responsive yard cards grid for larger displays - 3 columns to match SniffSpot */
+@media (min-width: 1440px) {
+  .yard-cards-grid {
+    grid-template-columns: repeat(3, minmax(380px, 1fr)) !important;
+    gap: 16px !important;
+    max-width: 1200px !important;
+  }
+}
+
+/* Ensure filter pills container has proper styling with visible scrollbar */
+.filter-pills-container {
+  display: flex !important;
+  gap: 0.75rem !important;
+  margin-bottom: 2rem !important;
+  overflow-x: auto !important;
+  flex-wrap: nowrap !important;
+  padding: 4px 0 !important; /* Add some padding for scroll area */
+  scrollbar-width: auto !important; /* Force scrollbar to be visible in Firefox */
+  -ms-overflow-style: scrollbar !important; /* Force scrollbar in IE/Edge */
+}
+
+/* Force visibility of horizontal scrollbars */
+.filter-pills-container::-webkit-scrollbar {
+  height: 12px !important;
+  -webkit-appearance: none !important;
+}
+
+.filter-pills-container::-webkit-scrollbar-track {
+  background: #e2e8f0 !important;
+  border-radius: 6px !important;
+  margin: 0 8px !important;
+}
+
+.filter-pills-container::-webkit-scrollbar-thumb {
+  background: #64748b !important;
+  border-radius: 6px !important;
+  border: 1px solid #94a3b8 !important;
+}
+
+.filter-pills-container::-webkit-scrollbar-thumb:hover {
+  background: #475569 !important;
+}
+
+/* Also ensure the container shows scrollbars */
+.filter-pills-container {
+  scrollbar-width: auto !important;
+  scrollbar-color: #64748b #e2e8f0 !important;
+  overflow-x: scroll !important;
+}

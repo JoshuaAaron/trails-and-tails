@@ -11,6 +11,9 @@
     "check:brand": "grep -R --line-number -E '#[0-9A-Fa-f]{6}' src | grep -vE '--bb-|brand.css' && echo 'Found hard-coded hex (disallowed)' && exit 1 || echo 'No stray hex.'"
   },
   "dependencies": {
+    "@googlemaps/js-api-loader": "^2.0.2",
+    "@googlemaps/react-wrapper": "^1.2.0",
+    "@vis.gl/react-google-maps": "^1.7.1",
     "axios": "^1.13.2",
     "next": "16.0.2",
     "react": "19.2.0",
@@ -19,14 +22,19 @@
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.11.0",
+    "@modelcontextprotocol/sdk": "^1.22.0",
     "@tailwindcss/postcss": "^4",
+    "@types/google.maps": "^3.58.1",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "axe-core": "^4.11.0",
     "eslint": "^9",
     "eslint-config-next": "16.0.2",
     "playwright": "^1.56.1",
+    "puppeteer": "^24.30.0",
     "tailwindcss": "^4",
+    "tsx": "^4.20.6",
     "typescript": "^5",
     "typescript-eslint": "^8.46.4"
   }

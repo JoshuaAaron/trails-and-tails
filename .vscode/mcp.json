@@ -1,9 +1,19 @@
 {
   "servers": {
-    "trails-and-tails-debug-server": {
+    "context7": {
       "type": "stdio",
       "command": "npx",
-      "args": ["tsx", "tools/debug/mcp-server.ts"]
+      "args": ["-y", "@upstash/context7-mcp"]
+    },
+    "chrome-devtools": {
+      "type": "stdio", 
+      "command": "npx",
+      "args": ["-y", "chrome-devtools-mcp"]
+    },
+    "playwright": {
+      "type": "stdio",
+      "command": "npx", 
+      "args": ["-y", "@playwright/mcp"]
     }
   }
 }

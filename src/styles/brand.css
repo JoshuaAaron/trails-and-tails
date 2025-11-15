@@ -3,6 +3,9 @@
   --bb-bg-primary:var(--bb-mist);--bb-bg-surface:#FFFFFF;--bb-text-primary:var(--bb-night);--bb-text-on-brand:var(--bb-mist);--bb-brand:var(--bb-brook);--bb-brand-2:var(--bb-ridge);--bb-accent:var(--bb-bone);--bb-border:var(--bb-slate);
   --bb-radius-card:12px;--bb-radius-input:8px;--bb-radius-pill:999px;--bb-shadow-card:0 4px 14px rgba(0,0,0,0.08);
   --bb-font-heading:"Libre Baskerville",serif;--bb-font-body:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,Arial,"Helvetica Neue",sans-serif;
+  
+  /* Map-specific tokens */
+  --bb-pin-size:32px;--bb-pin-selected-size:40px;--bb-cluster-size:40px;
 }
 
 /* Utility classes */
@@ -22,4 +25,108 @@
   color: var(--bb-ember);
   font-size: 14px;
   margin-top: 0.25rem;
+}
+
+/* Map container styles */
+.map-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 400px; /* Ensure minimum height */
+  border-radius: var(--bb-radius-card);
+  overflow: hidden;
+  border: 1px solid var(--bb-border);
+}
+
+.map-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--bb-foam);
+  color: var(--bb-brand-2);
+  font-weight: 500;
+}
+
+/* Responsive search layout */
+.results-container {
+  position: relative;
+  width: 100%;
+}
+
+.results-container.list-layout {
+  display: block;
+}
+
+.results-container.map-layout {
+  height: 60vh;
+  min-height: 400px;
+}
+
+/* Mobile: Full-width toggle behavior */
+@media (max-width: 767px) {
+  .results-container.map-layout {
+    height: 50vh;
+    min-height: 350px;
+  }
+  
+  .search-map {
+    height: 100%;
+    width: 100%;
+  }
+  
+  .results-grid {
+    margin-top: 1rem;
+  }
+}
+
+/* Tablet: Transitional layout */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .results-container.map-layout {
+    height: 55vh;
+    min-height: 400px;
+  }
+}
+
+/* Desktop: Side-by-side layout when both views could be shown */
+@media (min-width: 1024px) {
+  .search-main {
+    padding: 2rem;
+  }
+  
+  .results-container.map-layout {
+    height: calc(100vh - 280px);
+    min-height: 500px;
+  }
+  
+  .search-map {
+    height: 100%;
+    width: 100%;
+    min-height: 500px;
+  }
+}
+
+/* Ensure map container gets proper height */
+.map-view-container {
+  height: 100%;
+  width: 100%;
+}
+
+.map-view-container .map-container {
+  height: 100% !important;
+  min-height: 400px !important;
+}
+
+/* Map container accessibility */
+.map-container:focus-within {
+  outline: 2px solid var(--bb-brand);
+  outline-offset: 2px;
+}
+
+/* Reduce motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .results-container,
+  .search-map,
+  .map-container {
+    transition: none !important;
+  }
 }
