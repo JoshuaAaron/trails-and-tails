@@ -107,14 +107,32 @@ export default function ListingPage({ params }: { params: Promise<{ id: string }
     
     switch (currentStep) {
       case 0: // Select Time
+        // Validate date is not in the past FIRST (before checking if times are selected)
+        if (selectedDate) {
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+          const selected = new Date(selectedDate);
+          if (selected < today) {
+            setError("Date must be in the future. Please select today or a future date.");
+            return false;
+          }
+        }
+        
         if (!selectedDate || !selectedStartTime || !selectedEndTime) {
           setError("Please select a date, start time, and end time.");
           return false;
         }
         
-        // Validate time range
+        // Validate end time is after start time
         const startDateTime = `${selectedDate}T${convertTo24Hour(selectedStartTime)}`;
         const endDateTime = `${selectedDate}T${convertTo24Hour(selectedEndTime)}`;
+        const startTime = new Date(startDateTime);
+        const endTime = new Date(endDateTime);
+        
+        if (endTime <= startTime) {
+          setError("End time must be after start time.");
+          return false;
+        }
         
         if (!isWithinSlots(yard, startDateTime, endDateTime)) {
           setError("Selected time is not available or doesn't meet our booking requirements (30-180 minutes, on 30-minute intervals).");
@@ -142,9 +160,25 @@ export default function ListingPage({ params }: { params: Promise<{ id: string }
           return false;
         }
         
-        // Validate time range
+        // Validate date is not in the past
+        const reviewToday = new Date();
+        reviewToday.setHours(0, 0, 0, 0);
+        const reviewSelected = new Date(selectedDate);
+        if (reviewSelected < reviewToday) {
+          setError("Date must be in the future. Please select today or a future date.");
+          return false;
+        }
+        
+        // Validate end time is after start time
         const reviewStartDateTime = `${selectedDate}T${convertTo24Hour(selectedStartTime)}`;
         const reviewEndDateTime = `${selectedDate}T${convertTo24Hour(selectedEndTime)}`;
+        const reviewStartTime = new Date(reviewStartDateTime);
+        const reviewEndTime = new Date(reviewEndDateTime);
+        
+        if (reviewEndTime <= reviewStartTime) {
+          setError("End time must be after start time.");
+          return false;
+        }
         
         if (!isWithinSlots(yard, reviewStartDateTime, reviewEndDateTime)) {
           setError("Selected time is not available or doesn't meet our booking requirements (30-180 minutes, on 30-minute intervals).");

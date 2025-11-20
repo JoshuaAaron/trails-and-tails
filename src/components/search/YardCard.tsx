@@ -1,14 +1,15 @@
+import Link from "next/link";
 import type { YardSummary } from "@/lib/types";
 
 interface YardCardProps {
   yard: YardSummary;
   selectedYardId?: string | null;
-  onYardSelect: (yardId: string) => void;
 }
 
-export function YardCard({ yard, selectedYardId, onYardSelect }: YardCardProps) {
+export function YardCard({ yard, selectedYardId }: YardCardProps) {
   return (
-    <div
+    <Link
+      href={`/listing/${yard.id}`}
       data-yard-card
       data-yard-id={yard.id}
       style={{
@@ -20,35 +21,9 @@ export function YardCard({ yard, selectedYardId, onYardSelect }: YardCardProps) 
         transition: "all 0.2s ease",
         cursor: "pointer",
         display: "block",
+        textDecoration: "none",
       }}
-      onClick={(e) => {
-        e.preventDefault();
-        onYardSelect(yard.id);
-      }}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          onYardSelect(yard.id);
-        }
-        // Arrow key navigation between cards
-        else if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
-          e.preventDefault();
-          const cards = Array.from(document.querySelectorAll('[data-yard-card]'));
-          const currentIndex = cards.indexOf(e.currentTarget);
-          const nextCard = cards[currentIndex + 1] as HTMLElement;
-          nextCard?.focus();
-        }
-        else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
-          e.preventDefault();
-          const cards = Array.from(document.querySelectorAll('[data-yard-card]'));
-          const currentIndex = cards.indexOf(e.currentTarget);
-          const prevCard = cards[currentIndex - 1] as HTMLElement;
-          prevCard?.focus();
-        }
-      }}
-      tabIndex={0}
-      role="button"
-      aria-label={`Select ${yard.name} to highlight on map. Price: $${yard.price} per hour. ${yard.fenced ? 'Fenced. ' : ''}${yard.water ? 'Water access available.' : ''}`}
+      aria-label={`View details for ${yard.name}. Price: $${yard.price} per hour. ${yard.fenced ? 'Fenced. ' : ''}${yard.water ? 'Water access available.' : ''}`}
     >
       <div
         style={{
@@ -135,6 +110,6 @@ export function YardCard({ yard, selectedYardId, onYardSelect }: YardCardProps) 
           </span>
         </div>
       </div>
-    </div>
+    </Link>
   );
 }

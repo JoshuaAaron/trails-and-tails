@@ -178,7 +178,6 @@ export default function SearchPage() {
                   key={yard.id}
                   yard={yard}
                   selectedYardId={selectedYardId}
-                  onYardSelect={handleYardSelect}
                 />
               ))}
             </div>
