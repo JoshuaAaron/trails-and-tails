@@ -6,8 +6,8 @@ import { test, expect } from '@playwright/test';
  * Validates that all ARIA attributes are correctly implemented for
  * screen reader accessibility throughout the booking flow.
  * 
- * Spec: specs/booking-happy-path.md + 01-E2E-TESTING-CHATMODE.md
- * WCAG: 4.1.2 Name, Role, Value
+ * Specification: specs/booking-happy-path.md
+ * Standards: WCAG 2.2 Level AA - 4.1.2 Name, Role, Value
  */
 
 test.describe('Booking Flow - ARIA Attributes', () => {

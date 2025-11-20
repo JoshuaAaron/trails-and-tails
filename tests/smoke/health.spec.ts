@@ -3,10 +3,10 @@ import { test, expect } from '@playwright/test';
 /**
  * Seed Test: Environment Verification
  * 
- * Purpose: Verify the application is in a testable state before running feature tests
- * This test MUST pass before any other tests can run reliably
+ * Purpose: Verify the application is in a testable state before running feature tests.
+ * This test MUST pass before any other tests can run reliably.
  * 
- * Per Main QA Chatmode: Use seed tests to establish ready-to-use page context
+ * Establishes baseline page state and verifies critical navigation paths exist.
  */
 
 test.describe('Application Health', () => {

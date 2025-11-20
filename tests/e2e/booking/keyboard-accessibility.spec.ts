@@ -6,8 +6,8 @@ import { test, expect } from '@playwright/test';
  * Validates that the entire booking flow is fully keyboard accessible,
  * with no keyboard traps and proper focus management.
  * 
- * Spec: 01-E2E-TESTING-CHATMODE.md (E2E Accessibility Requirements)
- * WCAG: 2.1.1 Keyboard, 2.1.2 No Keyboard Trap, 2.4.3 Focus Order
+ * Specification: specs/booking-happy-path.md
+ * Standards: WCAG 2.2 - 2.1.1 Keyboard, 2.1.2 No Keyboard Trap, 2.4.3 Focus Order
  */
 
 test.describe('Booking Flow - Keyboard Accessibility', () => {
