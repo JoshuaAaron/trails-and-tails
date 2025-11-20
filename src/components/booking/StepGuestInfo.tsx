@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 
 interface StepGuestInfoProps {
   guestNotes: string;
@@ -19,6 +19,7 @@ export function StepGuestInfo({
   onDogNamesChange,
   error,
 }: StepGuestInfoProps) {
+  const guestCountRef = useRef<HTMLSelectElement>(null);
   const [dogNameInputs, setDogNameInputs] = useState<string[]>(() => {
     // Initialize with existing dog names or empty strings based on guest count
     const names = [...dogNames];
@@ -27,6 +28,11 @@ export function StepGuestInfo({
     }
     return names.slice(0, guests);
   });
+
+  // Auto-focus first input when component mounts
+  useEffect(() => {
+    guestCountRef.current?.focus();
+  }, []);
 
   const handleGuestCountChange = (count: number) => {
     onGuestsChange(count);
@@ -86,6 +92,7 @@ export function StepGuestInfo({
           Number of Dogs
         </label>
         <select
+          ref={guestCountRef}
           id="guest-count"
           value={guests}
           onChange={(e) => handleGuestCountChange(parseInt(e.target.value))}
