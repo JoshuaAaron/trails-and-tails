@@ -64,15 +64,27 @@ export function Map({
 
   if (!apiKey) {
     return (
-      <div className={`map-container map-error ${className}`}>
+      <div className={`map-container map-error ${className}`} style={{ height: '100%', width: '100%' }}>
         <div style={{ 
           display: 'flex', 
+          flexDirection: 'column',
           alignItems: 'center', 
           justifyContent: 'center', 
           height: '100%',
-          color: 'var(--bb-ember)'
+          padding: '2rem',
+          textAlign: 'center',
+          backgroundColor: 'var(--bb-bg-surface)',
+          color: 'var(--bb-text-secondary)',
+          gap: '1rem'
         }}>
-          Google Maps API key not configured
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+            <circle cx="12" cy="10" r="3"></circle>
+          </svg>
+          <div>
+            <div style={{ fontWeight: 600, marginBottom: '0.5rem' }}>Map Preview</div>
+            <div style={{ fontSize: '14px' }}>Interactive map will appear here</div>
+          </div>
         </div>
       </div>
     );
